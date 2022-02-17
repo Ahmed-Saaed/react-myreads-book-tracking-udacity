@@ -14,7 +14,7 @@ class Search extends Component {
 
   handleChange = (q) => {
     this.setState(() => ({
-      query: q.trim(),
+      query: q,
     }));
 
     if (q.length > 0) {
@@ -33,13 +33,23 @@ class Search extends Component {
     }
   };
 
-  shelfChange(v, i) {
-    this.setState(() => ({value: v, id: i}));
-  }
+  updateBook = () => {
+    let {value, book} = this.state;
+
+    if (value.length > 0)
+      BooksAPI.update(book, value).then((response) => {
+        book.shelf = value;
+      });
+  };
+
+  shelfChange = (value, book) => {
+    this.setState(() => ({value: value, book: book}), this.updateBook);
+    console.log(book, value);
+  };
 
   render() {
     console.log(this.state.books, this.state.query);
-    console.log(`${this.state.value},${this.state.book.shelf}`);
+    console.log(`${this.state.value},${this.state.book}`);
 
     let {books, query} = this.state;
 
@@ -78,7 +88,7 @@ class Search extends Component {
                           <select
                             value={this.state.value}
                             onChange={(event) =>
-                              this.shelfChange(event.target.value, book.id)
+                              this.shelfChange(event.target.value, book)
                             }
                           >
                             <option value='move' disabled>

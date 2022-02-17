@@ -8,16 +8,19 @@ class BooksList extends Component {
     book: {},
   };
 
-  shelfChange = (v, b) => {
-    this.setState(() => ({value: v, book: b}));
+  updateBook = () => {
+    let {value, book} = this.state;
+
+    if (value.length > 0)
+      BooksAPI.update(book, value).then((response) => {
+        book.shelf = value;
+      });
   };
 
-  componentDidUpdate() {
-    const {book, value} = this.state;
+  shelfChange = (value, book) => {
+    this.setState(() => ({value: value, book: book}), this.updateBook);
     console.log(book, value);
-
-    if (this.state.value !== '') BooksAPI.update(book, value);
-  }
+  };
 
   render() {
     let {books} = this.props;
@@ -52,8 +55,7 @@ class BooksList extends Component {
                               />
                               <div className='book-shelf-changer'>
                                 <select
-                                  default={book.shelf}
-                                  value={book.shelf}
+                                  value={this.state.value && book.shelf}
                                   onChange={(event) =>
                                     this.shelfChange(event.target.value, book)
                                   }
