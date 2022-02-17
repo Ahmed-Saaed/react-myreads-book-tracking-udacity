@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 
+import Book from './book';
 import * as BooksAPI from '../BooksAPI';
 
 class Search extends Component {
@@ -30,6 +31,10 @@ class Search extends Component {
             books: [],
           }));
         });
+    } else {
+      this.setState(() => ({
+        books: [],
+      }));
     }
   };
 
@@ -37,7 +42,7 @@ class Search extends Component {
     let {value, book} = this.state;
 
     if (value.length > 0)
-      BooksAPI.update(book, value).then((response) => {
+      BooksAPI.update(book, value).then(() => {
         book.shelf = value;
       });
   };
@@ -70,44 +75,7 @@ class Search extends Component {
           <div className='search-books-results'>
             <ol className='books-grid'>
               {Array.isArray(books) ? (
-                books.map((book) => (
-                  <li key={book.id}>
-                    <div className='book'>
-                      <div className='book-top'>
-                        <div
-                          className='book-cover'
-                          style={{
-                            width: 128,
-                            height: 188,
-                            backgroundImage: `url(${
-                              book.imageLinks.thumbnail
-                            })`,
-                          }}
-                        />
-                        <div className='book-shelf-changer'>
-                          <select
-                            value={this.state.value}
-                            onChange={(event) =>
-                              this.shelfChange(event.target.value, book)
-                            }
-                          >
-                            <option value='move' disabled>
-                              Move to...
-                            </option>
-                            <option value='currentlyReading'>
-                              Currently Reading
-                            </option>
-                            <option value='wantToRead'>Want to Read</option>
-                            <option value='read'>Read</option>
-                            <option value='none'>None</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className='book-title'>{book.title}</div>
-                      <div className='book-authors'>{book.authors}</div>
-                    </div>
-                  </li>
-                ))
+                books.map((book) => <Book key={book.id} book={book} />)
               ) : (
                 <div>try another book </div>
               )}
