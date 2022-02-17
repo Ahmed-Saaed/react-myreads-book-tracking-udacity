@@ -5,29 +5,22 @@ import * as BooksAPI from '../BooksAPI';
 class BooksList extends Component {
   state = {
     value: '',
-    id: '',
-    books: [],
+    book: {},
   };
 
-  shelfChange(v, i) {
-    this.setState(() => ({value: v, id: i}));
-  }
-
-  componentDidMount() {
-    BooksAPI.getAll().then((books) => {
-      this.setState(() => ({
-        books,
-      }));
-    });
-  }
+  shelfChange = (v, b) => {
+    this.setState(() => ({value: v, book: b}));
+  };
 
   componentDidUpdate() {
-    BooksAPI.update(this.state.id, this.state.value);
+    const {book, value} = this.state;
+    console.log(book, value);
+
+    if (this.state.value !== '') BooksAPI.update(book, value);
   }
 
   render() {
-    console.log(`${this.state.value} ...${this.state.id}`);
-    let {books} = this.state;
+    let {books} = this.props;
     console.log(books);
     return (
       <div>
@@ -59,12 +52,10 @@ class BooksList extends Component {
                               />
                               <div className='book-shelf-changer'>
                                 <select
-                                  value={this.state.value}
+                                  default={book.shelf}
+                                  value={book.shelf}
                                   onChange={(event) =>
-                                    this.shelfChange(
-                                      event.target.value,
-                                      book.id
-                                    )
+                                    this.shelfChange(event.target.value, book)
                                   }
                                 >
                                   <option value='move' disabled>
@@ -113,10 +104,7 @@ class BooksList extends Component {
                                 <select
                                   value={this.state.value}
                                   onChange={(event) =>
-                                    this.shelfChange(
-                                      event.target.value,
-                                      book.id
-                                    )
+                                    this.shelfChange(event.target.value, book)
                                   }
                                 >
                                   <option value='move' disabled>
@@ -165,10 +153,7 @@ class BooksList extends Component {
                                 <select
                                   value={this.state.value}
                                   onChange={(event) =>
-                                    this.shelfChange(
-                                      event.target.value,
-                                      book.id
-                                    )
+                                    this.shelfChange(event.target.value, book)
                                   }
                                 >
                                   <option value='move' disabled>

@@ -8,26 +8,29 @@ class Search extends Component {
     query: '',
     books: [],
 
-    id: '',
+    book: {},
     value: '',
   };
-
-  componentDidUpdat() {}
 
   handleChange = (q) => {
     this.setState(() => ({
       query: q.trim(),
     }));
 
-    BooksAPI.search(q)
-      .then((books) => {
-        this.setState(() => ({
-          books,
-        }));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    if (q.length > 0) {
+      BooksAPI.search(q)
+        .then((books) => {
+          this.setState(() => ({
+            books,
+          }));
+        })
+        .catch((err) => {
+          console.error(err);
+          this.setState(() => ({
+            books: [],
+          }));
+        });
+    }
   };
 
   shelfChange(v, i) {
@@ -35,8 +38,10 @@ class Search extends Component {
   }
 
   render() {
-    console.log(this.state.books);
-    console.log(`${this.state.value} ...${this.state.id}`);
+    console.log(this.state.books, this.state.query);
+    console.log(`${this.state.value},${this.state.book.shelf}`);
+
+    let {books, query} = this.state;
 
     return (
       <div>
@@ -45,7 +50,7 @@ class Search extends Component {
             <Link to='/' className='close-search' />
             <div className='search-books-input-wrapper'>
               <input
-                value={this.state.query}
+                value={query}
                 onChange={(event) => this.handleChange(event.target.value)}
                 type='text'
                 placeholder='Search by title or author'
@@ -54,8 +59,8 @@ class Search extends Component {
           </div>
           <div className='search-books-results'>
             <ol className='books-grid'>
-              {this.state.query &&
-                this.state.books.map((book) => (
+              {Array.isArray(books) ? (
+                books.map((book) => (
                   <li key={book.id}>
                     <div className='book'>
                       <div className='book-top'>
@@ -92,7 +97,10 @@ class Search extends Component {
                       <div className='book-authors'>{book.authors}</div>
                     </div>
                   </li>
-                ))}
+                ))
+              ) : (
+                <div>try another book </div>
+              )}
             </ol>
           </div>
         </div>
