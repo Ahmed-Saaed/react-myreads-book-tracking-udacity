@@ -10,11 +10,14 @@ class Search extends Component {
     search: [],
   };
 
+  //clear the search on every mount
   componentDidMount() {
     this.setState(() => ({
       search: [],
     }));
   }
+
+  // controlled search input and use the user input to call the api
 
   handleChange = (q) => {
     this.setState(() => ({

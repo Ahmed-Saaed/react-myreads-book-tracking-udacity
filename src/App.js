@@ -11,7 +11,7 @@ class BooksApp extends React.Component {
     books: [],
   };
 
-  //
+  //fetch the books from the api
 
   async componentDidMount() {
     BooksAPI.getAll().then((books) => {
@@ -21,6 +21,7 @@ class BooksApp extends React.Component {
     });
   }
 
+  //update the shelf and call the api again
   updateBook = () => {
     let {value, book} = this.state;
 
@@ -31,6 +32,8 @@ class BooksApp extends React.Component {
 
     this.componentDidMount();
   };
+
+  //use the callback of this state to call the update function on every change happend to the ui
 
   shelfChange = (value, book) => {
     this.setState(() => ({value: value, book: book}), this.updateBook);
