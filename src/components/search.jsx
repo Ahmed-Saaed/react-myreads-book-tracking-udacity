@@ -7,11 +7,14 @@ import * as BooksAPI from '../BooksAPI';
 class Search extends Component {
   state = {
     query: '',
-    books: [],
-
-    book: {},
-    value: '',
+    search: [],
   };
+
+  componentDidMount() {
+    this.setState(() => ({
+      search: [],
+    }));
+  }
 
   handleChange = (q) => {
     this.setState(() => ({
@@ -20,43 +23,26 @@ class Search extends Component {
 
     if (q.length > 0) {
       BooksAPI.search(q)
-        .then((books) => {
+        .then((search) => {
           this.setState(() => ({
-            books,
+            search,
           }));
         })
         .catch((err) => {
           console.error(err);
           this.setState(() => ({
-            books: [],
+            search: [],
           }));
         });
     } else {
       this.setState(() => ({
-        books: [],
+        search: [],
       }));
     }
   };
 
-  updateBook = () => {
-    let {value, book} = this.state;
-
-    if (value.length > 0)
-      BooksAPI.update(book, value).then(() => {
-        book.shelf = value;
-      });
-  };
-
-  shelfChange = (value, book) => {
-    this.setState(() => ({value: value, book: book}), this.updateBook);
-    console.log(book, value);
-  };
-
   render() {
-    console.log(this.state.books, this.state.query);
-    console.log(`${this.state.value},${this.state.book}`);
-
-    let {books, query} = this.state;
+    let {search, query} = this.state;
 
     return (
       <div>
@@ -74,8 +60,14 @@ class Search extends Component {
           </div>
           <div className='search-books-results'>
             <ol className='books-grid'>
-              {Array.isArray(books) ? (
-                books.map((book) => <Book key={book.id} book={book} />)
+              {Array.isArray(search) ? (
+                search.map((book) => (
+                  <Book
+                    key={book.id}
+                    book={book}
+                    shelfChange={this.props.shelfChange}
+                  />
+                ))
               ) : (
                 <div>try another book </div>
               )}
