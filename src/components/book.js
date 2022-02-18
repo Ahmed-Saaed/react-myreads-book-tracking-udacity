@@ -1,10 +1,6 @@
 import React, {Component} from 'react';
 
 class Book extends Component {
-  state = {
-    value: '',
-  };
-
   render() {
     let {book} = this.props;
     return (
@@ -16,6 +12,9 @@ class Book extends Component {
               style={{
                 width: 128,
                 height: 188,
+
+                // in react v-17 there is optional chaining a.b?.c
+
                 backgroundImage: `url(${book.imageLinks &&
                   book.imageLinks.thumbnail})`,
               }}
@@ -24,7 +23,7 @@ class Book extends Component {
               <select
                 value={book.shelf}
                 onChange={(event) =>
-                  this.props.shelfChange(event.target.value, book)
+                  this.props.updateBook(event.target.value, book)
                 }
               >
                 <option value='move' disabled>

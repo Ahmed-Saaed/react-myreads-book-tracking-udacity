@@ -5,6 +5,7 @@ import './App.css';
 
 import BooksList from './components/books';
 import Search from './components/search';
+import NotFound from './components/notfound';
 
 class BooksApp extends React.Component {
   state = {
@@ -22,21 +23,14 @@ class BooksApp extends React.Component {
   }
 
   //update the shelf and call the api again
-  updateBook = () => {
-    let {value, book} = this.state;
+  updateBook = (value, book) => {
+    book.shelf = value;
 
-    if (value.length > 0)
-      BooksAPI.update(book, value).then(() => {
-        book.shelf = value;
-      });
+    this.setState(() => ({
+      books: this.state.books.filter((b) => b.id !== book.id).concat([book]),
+    }));
 
-    this.componentDidMount();
-  };
-
-  //use the callback of this state to call the update function on every change happend to the ui
-
-  shelfChange = (value, book) => {
-    this.setState(() => ({value: value, book: book}), this.updateBook);
+    if (value.length > 0) BooksAPI.update(book, value);
   };
 
   render() {
@@ -49,16 +43,17 @@ class BooksApp extends React.Component {
             element={
               <BooksList
                 books={this.state.books}
-                shelfChange={this.shelfChange}
+                updateBook={this.updateBook}
               />
             }
           />
           <Route
             path='/search'
             element={
-              <Search books={this.state.books} shelfChange={this.shelfChange} />
+              <Search books={this.state.books} updateBook={this.updateBook} />
             }
           />
+          <Route path='*' element={<NotFound />} />
         </Routes>
       </div>
     );

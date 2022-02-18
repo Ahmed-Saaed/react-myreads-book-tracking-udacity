@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-
 import Book from './book';
 import * as BooksAPI from '../BooksAPI';
 
@@ -10,14 +9,14 @@ class Search extends Component {
     search: [],
   };
 
-  //clear the search on every mount
+  //clear the search on everymount
   componentDidMount() {
     this.setState(() => ({
       search: [],
     }));
   }
 
-  // controlled search input and use the user input to call the api
+  // update the search list upon each input then loop on the response to find which books already exist  in the original state to update the state
 
   handleChange = (q) => {
     this.setState(() => ({
@@ -26,16 +25,28 @@ class Search extends Component {
 
     if (q.length > 0) {
       BooksAPI.search(q)
-        .then((search) => {
-          this.setState(() => ({
+        .then((response) => {
+          let search = [];
+
+          if (response) {
+            search = response.map((search) => {
+              const exist = this.props.books.find(
+                (onShelf) => onShelf.id === search.id
+              );
+              if (exist) {
+                return exist;
+              } else {
+                search.shelf = 'none';
+                return search;
+              }
+            });
+          }
+          this.setState({
             search,
-          }));
+          });
         })
         .catch((err) => {
           console.error(err);
-          this.setState(() => ({
-            search: [],
-          }));
         });
     } else {
       this.setState(() => ({
@@ -68,7 +79,7 @@ class Search extends Component {
                   <Book
                     key={book.id}
                     book={book}
-                    shelfChange={this.props.shelfChange}
+                    updateBook={this.props.updateBook}
                   />
                 ))
               ) : (
